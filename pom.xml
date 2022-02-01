@@ -6,7 +6,7 @@
     <name>ZL ETL</name>
     <description>ETL Project for Zanmi Lasante(ZL) OpenMRS instances</description>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <developers>
         <developer>
@@ -38,8 +38,8 @@
     </repositories>
 
     <properties>
-        <dataExportSqlDir>${project.build.directory}/openmrs-packager-config/reports/reportdescriptors/dataexports/sql/</dataExportSqlDir>
-        <liquibaseSourceDir>${project.build.directory}/openmrs-packager-config/pih/liquibase/sql/</liquibaseSourceDir>
+        <dataExportSqlDir>${project.build.directory}/openmrs-config-zl/reports/reportdescriptors/dataexports/sql/</dataExportSqlDir>
+        <liquibaseSourceDir>${project.build.directory}/openmrs-config-zl/pih/liquibase/sql/</liquibaseSourceDir>
         <liquibaseDestDir>${project.build.directory}/zl-etl/jobs/sql/utils/</liquibaseDestDir>
         <petlJobExtractionSqlDir>${project.build.directory}/zl-etl/jobs/sql/extractions/</petlJobExtractionSqlDir>
     </properties>
@@ -61,11 +61,11 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.pih.openmrs</groupId>
-                                    <artifactId>openmrs-config-pihemr</artifactId>
-                                    <version>1.0.0-SNAPSHOT</version>
+                                    <artifactId>openmrs-config-zl</artifactId>
+                                    <version>1.31.0-SNAPSHOT</version>
                                     <type>zip</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/openmrs-packager-config</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/openmrs-config-zl</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -74,33 +74,50 @@
             </plugin>
 
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.2.0</version>
-                <configuration>
-                    <resources>
-                        <resource>
-                            <directory>${basedir}</directory>
-                            <filtering>false</filtering>
-                            <includes>
-                                <include>datasources/**</include>
-                                <include>jobs/**</include>
-                            </includes>
-                        </resource>
-                    </resources>
-                    <outputDirectory>${project.build.directory}/zl-etl/</outputDirectory>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>package-datasources-and-jobs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>datasources/**</include>
+                                        <include>jobs/**</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${project.build.directory}/zl-etl/</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-liquibase-sql-to-petl</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                            <resources>
+                                <resource>
+                                    <directory>${liquibaseSourceDir}</directory>
+                                    <includes>
+                                        <include>*.sql</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${liquibaseDestDir}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -141,30 +158,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
-                <executions>
-                    <execution>
-                        <id>copy-liquibase-sql-to-petl</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${liquibaseDestDir}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${liquibaseSourceDir}</directory>
-                                    <includes>
-                                        <include>*.sql</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -183,6 +176,18 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
             </plugin>
         </plugins>
     </build>

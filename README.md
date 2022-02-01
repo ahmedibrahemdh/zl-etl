@@ -11,22 +11,9 @@ For implementers, see [Puppet](https://github.com/PIH/mirebalais-puppet/tree/mas
 The recommended Java version is **OpenJDK 8 JDK**
 
 ### Source MySQL databases
-You must have access to source MySQL databases for Upper and Lower Neno.
+You must have access to MySQL databases for the instances that you plan to use as sources.
 The recommendation is that these databases are replicas of production DBs, not the actual production instances, as a 
 precaution to ensure no production data is inadvertently affected by the ETL process.
-
-### Target MySQL databases
-* You must have access to a target MySQL instance
-
-Example:
-
-```bash
-mysql> create database neno_reporting default charset utf8;
-Query OK, 1 row affected (0.00 sec)
-
-mysql> create database lisungwi_reporting default charset utf8;
-Query OK, 1 row affected (0.00 sec)
-```
 
 ### Target SQL Server databases
 * You must have access to a SQL Server target instance into which to ETL from MySQL
