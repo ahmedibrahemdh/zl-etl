@@ -1,0 +1,66 @@
+# For the HIV Server, we only execute the "hiv", "ovc", and "hivmigration" ETL jobs
+
+type: "job-pipeline"
+description: "Refresh HIV Data for ${siteName}"
+parameters:
+  siteName: "hiv"
+schedule:
+  cron: "${executeCron.refreshHivData}"
+configuration:
+  jobs:
+    - path: "create-source-views-and-functions.yml"
+    - type: "iterating-job"
+      description: "Load HIV Data from all tables for ${siteName}"
+      configuration:
+        jobTemplate:
+          type: "sqlserver-bulk-import"
+          description: "Load HIV Data for ${tableName} for ${siteName}"
+          configuration:
+            extract:
+              datasource: "openmrs-${siteName}.yml"
+              query:  "sql/extractions/${tableName}.sql"
+            load:
+              datasource: "warehouse-hiv.yml"
+              table: "${tableName}"
+              schema: "sql/schemas/${tableName}.sql"
+        iterations:
+          - tableName: "hiv_dispensing"
+          - tableName: "hiv_patient"
+          - tableName: "hiv_patient_program"
+          - tableName: "hiv_regimens"
+          - tableName: "hiv_status"
+          - tableName: "hiv_tests"
+          - tableName: "hiv_viral_load"
+          - tableName: "hiv_visit"
+          - tableName: "ovc_program_encounters"
+          - tableName: "pmtct_infant_delivery"
+          - tableName: "pmtct_contacts"
+          - tableName: "pmtct_visits"
+          - tableName: "pmtct_labs"
+          - tableName: "pmtct_pregnancy"
+
+    - type: "sqlserver-bulk-import"
+      description: "Load hivmigration_data_warnings for ${siteName}"
+      configuration:
+        extract:
+          datasource: "openmrs-${siteName}.yml"
+          query:  "sql/extractions/hivmigration_data_warnings.sql"
+          conditional: "select if(count(*)>0,true,false) from information_schema.tables where table_name = 'hivmigration_data_warnings'"
+        load:
+          datasource: "warehouse-hiv.yml"
+          table: "hivmigration_data_warnings"
+          schema: "sql/schemas/hivmigration_data_warnings.sql"
+          dropAndRecreateTable: "true"
+
+    - type: "sqlserver-bulk-import"
+      description: "Load hivmigration_aggregrate_data_warnings for ${siteName}"
+      configuration:
+        extract:
+          datasource: "openmrs-${siteName}.yml"
+          query:  "sql/extractions/hivmigration_aggregrate_data_warnings.sql"
+          conditional: "select if(count(*)>0,true,false) from information_schema.tables where table_name = 'hivmigration_data_warnings'"
+        load:
+          datasource: "warehouse-hiv.yml"
+          table: "hivmigration_aggregrate_data_warnings"
+          schema: "sql/schemas/hivmigration_aggregrate_data_warnings.sql"
+          dropAndRecreateTable: "false"

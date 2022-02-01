@@ -1,0 +1,16 @@
+SELECT
+    id,
+    openmrs_patient_id,
+    openmrs_encounter_id,
+    hiv_emr_encounter_id,
+    zl_emr_id,
+    hivemr_v1_id,
+    hiv_dossier_id,
+    warning_type,
+    warning_details,
+    encounter_date,
+    field_name,
+    field_value,
+    flag_for_review
+FROM
+    hivmigration_data_warnings;

@@ -1,0 +1,10 @@
+type: "iterating-job"
+description: "Refresh base tables for HUM-CI"
+schedule:
+  cron: "${executeCron.refreshHumciData}"
+configuration:
+  iterations:
+    - siteName: "humci"
+      partitionNum: "1"
+  jobTemplate:
+    path: "refresh-base-tables.yml"

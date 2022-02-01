@@ -1,0 +1,7 @@
+databaseType: "mysql"
+host: ${datasources.openmrs.hiv.host}
+port: ${datasources.openmrs.hiv.port}
+databaseName: ${datasources.openmrs.hiv.databaseName}
+user: ${datasources.openmrs.hiv.user}
+password: ${datasources.openmrs.hiv.password}
+options: ${datasources.openmrs.hiv.options}

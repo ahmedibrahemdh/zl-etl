@@ -1,0 +1,7 @@
+databaseType: "mysql"
+host: ${datasources.openmrs.hinche.host}
+port: ${datasources.openmrs.hinche.port}
+databaseName: ${datasources.openmrs.hinche.databaseName}
+user: ${datasources.openmrs.hinche.user}
+password: ${datasources.openmrs.hinche.password}
+options: ${datasources.openmrs.hinche.options}

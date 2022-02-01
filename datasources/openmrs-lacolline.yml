@@ -1,0 +1,7 @@
+databaseType: "mysql"
+host: ${datasources.openmrs.lacolline.host}
+port: ${datasources.openmrs.lacolline.port}
+databaseName: ${datasources.openmrs.lacolline.databaseName}
+user: ${datasources.openmrs.lacolline.user}
+password: ${datasources.openmrs.lacolline.password}
+options: ${datasources.openmrs.lacolline.options}

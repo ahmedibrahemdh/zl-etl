@@ -1,0 +1,7 @@
+databaseType: "mysql"
+host: ${datasources.openmrs.humci.host}
+port: ${datasources.openmrs.humci.port}
+databaseName: ${datasources.openmrs.humci.databaseName}
+user: ${datasources.openmrs.humci.user}
+password: ${datasources.openmrs.humci.password}
+options: ${datasources.openmrs.humci.options}

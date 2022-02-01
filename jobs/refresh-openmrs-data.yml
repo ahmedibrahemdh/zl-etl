@@ -1,0 +1,21 @@
+type: "iterating-job"
+description: "Refreshing OpenMRS Data for all sites"
+schedule:
+  cron: "${executeCron.refreshOpenmrsData}"
+configuration:
+  maxConcurrentJobs: 5  # Import into up to 5 sites concurrently
+  iterations:
+    - siteName: "cange"   #siteName is populated in each table and also used to identify the appropriate data source
+      partitionNum: "1"   #partitionNum is used to identify the sqlserver partition that this site's data is loaded into
+    - siteName: "hinche"
+      partitionNum: "2"
+    - siteName: "saint_marc_hsn"
+      partitionNum: "3"
+    - siteName: "lacolline"
+      partitionNum: "4"
+    - siteName: "thomonde"
+      partitionNum: "5"
+    - siteName: "mirebalais"
+      partitionNum: "6"
+  jobTemplate:
+    path: "refresh-base-tables.yml"

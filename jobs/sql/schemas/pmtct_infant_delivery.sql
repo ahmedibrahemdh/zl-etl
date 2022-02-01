@@ -1,0 +1,26 @@
+CREATE TABLE pmtct_infant_delivery
+(
+patient_id int,
+infant_age_in_months int,
+age_cat_infant varchar(50),
+eid_date_enrolled	datetime,
+eid_date_completed	datetime,
+mom_hiv_emr_id int,
+mom_age_at_delivery int,
+delivery_date date,
+Delivery_with_partograph bit,
+delivery_location_cat  varchar(255),
+maternity_clinic_type  varchar(255),
+breastfeeding_status  varchar(255),
+hiv_rapid_test_date date,
+hiv_test_result varchar(255),
+pcr_test_date date,
+pcr_result varchar(255),
+art_start_date date,
+is_active_on_art bit,
+next_dispensing_date date,
+is_LTFU bit,
+is_exposed bit,
+is_lab_specimen_rejected bit,
+health_facility varchar(255)
+);
