@@ -25,9 +25,21 @@ arv_1_quantity int,
 arv_2_med varchar(255),
 arv_2_med_short_name varchar(255),
 arv_2_quantity int,
+arv_3_med varchar(255),
+arv_3_med_short_name varchar(255),
+arv_3_quantity int,
 tms_1_med varchar(255),
 tms_1_med_short_name varchar(255),
 tms_1_quantity int,
+inh_pri_med varchar(255),
+inh_pri_med_short_name varchar(255),
+inh_pri_quantity int,
+inh_sec_med varchar(255),
+inh_sec_med_short_name varchar(255),
+inh_sec_quantity int,
+b6_med varchar(255),
+b6_med_short_name varchar(255),
+b6_quantity int,
 regimen_change char(1),
 days_late_to_pickup int,
 regimen_match char(1)
@@ -194,6 +206,39 @@ inner join obs o on o.voided =0 and o.obs_group_id = og.obs_group_id
   and  o.concept_id =concept_from_mapping('CIEL',1443)
 set arv_2_quantity = o.value_numeric;
 
+-- ARV#3 med and quantity
+update temp_HIV_dispensing t
+inner join obs og on og.encounter_id = t.encounter_id and og.voided =0
+  and og.value_coded =concept_from_mapping('PIH',13960)
+inner join obs o on o.voided =0 and o.obs_group_id = og.obs_group_id
+  and  o.concept_id =concept_from_mapping('CIEL',1282)
+set arv_3_med_short_name = concept_name(o.value_coded,'en'),
+    arv_3_med = drugName(o.value_drug);
+
+update temp_HIV_dispensing t
+inner join obs og on og.encounter_id = t.encounter_id and og.voided =0
+  and og.value_coded =concept_from_mapping('PIH',13960)
+inner join obs o on o.voided =0 and o.obs_group_id = og.obs_group_id
+  and  o.concept_id =concept_from_mapping('CIEL',1443)
+set arv_3_quantity = o.value_numeric;
+
+
+-- ARV#3 med and quantity
+update temp_HIV_dispensing t
+inner join obs og on og.encounter_id = t.encounter_id and og.voided =0
+  and og.value_coded =concept_from_mapping('PIH',766)
+inner join obs o on o.voided =0 and o.obs_group_id = og.obs_group_id
+  and  o.concept_id =concept_from_mapping('CIEL',1282)
+set b6_med_short_name = concept_name(o.value_coded,'en'),
+    b6_med = drugName(o.value_drug);
+
+update temp_HIV_dispensing t
+inner join obs og on og.encounter_id = t.encounter_id and og.voided =0
+  and og.value_coded =concept_from_mapping('PIH',766)
+inner join obs o on o.voided =0 and o.obs_group_id = og.obs_group_id
+  and  o.concept_id =concept_from_mapping('CIEL',1443)
+set b6_quantity = o.value_numeric;
+
 -- TMS med and quantity
 update temp_HIV_dispensing t
 inner join obs og on og.encounter_id = t.encounter_id and og.voided =0
@@ -209,6 +254,39 @@ inner join obs og on og.encounter_id = t.encounter_id and og.voided =0
 inner join obs o on o.voided =0 and o.obs_group_id = og.obs_group_id
   and  o.concept_id =concept_from_mapping('CIEL',1443)
 set tms_1_quantity = o.value_numeric;
+
+-- INH primary
+update temp_HIV_dispensing t
+inner join obs og on og.encounter_id = t.encounter_id and og.voided =0
+  and og.value_coded =concept_from_mapping('PIH','primary')
+inner join obs o on o.voided =0 and o.obs_group_id = og.obs_group_id
+  and  o.concept_id =concept_from_mapping('CIEL',1282)
+set inh_pri_med_short_name = concept_name(o.value_coded,'en'),
+    inh_pri_med = drugName(o.value_drug);
+
+update temp_HIV_dispensing t
+inner join obs og on og.encounter_id = t.encounter_id and og.voided =0
+  and og.value_coded =concept_from_mapping('PIH','primary')
+inner join obs o on o.voided =0 and o.obs_group_id = og.obs_group_id
+  and  o.concept_id =concept_from_mapping('CIEL',1443)
+set inh_pri_quantity = o.value_numeric;
+
+-- INH secondary
+update temp_HIV_dispensing t
+inner join obs og on og.encounter_id = t.encounter_id and og.voided =0
+  and og.value_coded =concept_from_mapping('PIH','secondary')
+inner join obs o on o.voided =0 and o.obs_group_id = og.obs_group_id
+  and  o.concept_id =concept_from_mapping('CIEL',1282)
+set inh_sec_med_short_name = concept_name(o.value_coded,'en'),
+    inh_sec_med = drugName(o.value_drug);
+
+update temp_HIV_dispensing t
+inner join obs og on og.encounter_id = t.encounter_id and og.voided =0
+  and og.value_coded =concept_from_mapping('PIH','secondary')
+inner join obs o on o.voided =0 and o.obs_group_id = og.obs_group_id
+  and  o.concept_id =concept_from_mapping('CIEL',1443)
+set inh_sec_quantity = o.value_numeric;
+
 
 -- to calculate the days late and regimen change (whether the current regimen changed since the first one),
 -- the temp table is duplicated since MYSQL does not allow joining in the table that is being updated.
@@ -230,6 +308,8 @@ left outer join dup_HIV_dispensing d on d.patient_id=t.patient_id and d.dispense
 set t.days_late_to_pickup = if(t.dispense_date>d.next_dispense_date,datediff(t.dispense_date,d.next_dispense_date),0)
 where t.dispense_date_descending = 1;
 
+
+# final query
 Select
 t.patient_id,
 t.encounter_id,
@@ -250,9 +330,21 @@ t.arv_1_quantity,
 t.arv_2_med_short_name,
 t.arv_2_med,
 t.arv_2_quantity,
+t.arv_3_med_short_name,
+t.arv_3_med,
+t.arv_3_quantity,
 t.tms_1_med_short_name,
 t.tms_1_med,
 t.tms_1_quantity,
+t.inh_pri_med_short_name,
+t.inh_pri_med,
+t.inh_pri_quantity,
+t.inh_sec_med_short_name,
+t.inh_sec_med,
+t.inh_sec_quantity,
+t.b6_med_short_name,
+t.b6_med,
+t.b6_quantity,
 t.regimen_change,
 t.days_late_to_pickup,
 t.regimen_match,

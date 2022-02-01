@@ -37,8 +37,42 @@
         </repository>
     </repositories>
 
+    <properties>
+        <dataExportSqlDir>${project.build.directory}/openmrs-packager-config/reports/reportdescriptors/dataexports/sql/</dataExportSqlDir>
+        <liquibaseSourceDir>${project.build.directory}/openmrs-packager-config/pih/liquibase/sql/</liquibaseSourceDir>
+        <liquibaseDestDir>${project.build.directory}/zl-etl/jobs/sql/utils/</liquibaseDestDir>
+        <petlJobExtractionSqlDir>${project.build.directory}/zl-etl/jobs/sql/extractions/</petlJobExtractionSqlDir>
+    </properties>
+
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.pih.openmrs</groupId>
+                                    <artifactId>openmrs-config-pihemr</artifactId>
+                                    <version>1.0.0-SNAPSHOT</version>
+                                    <type>zip</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/openmrs-packager-config</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -50,6 +84,7 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.2.0</version>
@@ -67,6 +102,70 @@
                     <outputDirectory>${project.build.directory}/zl-etl/</outputDirectory>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-report-sql-to-petl</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <sourceFile>${dataExportSqlDir}/echocardiogram_encounters.sql</sourceFile>
+                                    <destinationFile>${petlJobExtractionSqlDir}/echocardiogram_encounters.sql</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>${dataExportSqlDir}/delivery.sql</sourceFile>
+                                    <destinationFile>${petlJobExtractionSqlDir}/mch_delivery.sql</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>${dataExportSqlDir}/diagnoses.sql</sourceFile>
+                                    <destinationFile>${petlJobExtractionSqlDir}/diagnoses.sql</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>${dataExportSqlDir}/labOrdersReport.sql</sourceFile>
+                                    <destinationFile>${petlJobExtractionSqlDir}/all_lab_orders.sql</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>${dataExportSqlDir}/labResultsExport.sql</sourceFile>
+                                    <destinationFile>${petlJobExtractionSqlDir}/all_lab_results.sql</destinationFile>
+                                </fileSet>
+                            </fileSets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>copy-liquibase-sql-to-petl</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${liquibaseDestDir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${liquibaseSourceDir}</directory>
+                                    <includes>
+                                        <include>*.sql</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.3.0</version>

@@ -6,7 +6,7 @@ CREATE TABLE hiv_tests (
     specimen_collection_date    DATE,
     result_date                 DATE,
     test_type                   VARCHAR(100),
-    test_result                 VARCHAR(10),
+    test_result                 VARCHAR(100),
     index_asc                   INT,
     index_desc                  INT
 );

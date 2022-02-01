@@ -1,13 +1,16 @@
-CREATE TABLE echocardiogram
+CREATE TABLE echocardiogram_encounters
 (
     patient_id                           INT,
     dossierId                            VARCHAR(30),
     emrid                                VARCHAR(30),
+    age                                  FLOAT,
+    gender                               VARCHAR(10),
     loc_registered                       VARCHAR(255),
-    encounter_datetime                   DATETIME,
+    date_echocardiogram                  DATETIME,
     encounter_location                   VARCHAR(255),
     provider                             VARCHAR(255),
     encounter_id                         INT,
+    visit_id                             INT,
     systolic_bp                          FLOAT,
     diastolic_bp                         FLOAT,
     heart_rate                           FLOAT,
@@ -22,8 +25,11 @@ CREATE TABLE echocardiogram
     pulmonary_artery_systolic_pressure   FLOAT,
     disease_category                     VARCHAR(255),
     disease_category_other_comment       TEXT,
-    peripartum_cardiomyopathy_diagnosis  VARCHAR(255),
-    ischemic_cardiomyopathy_diagnosis    VARCHAR(255),
-    study_results_changed_treatment_plan VARCHAR(255),
-    general_comments                     TEXT
+    peripartum_cardiomyopathy_diagnosis  BIT,
+    ischemic_cardiomyopathy_diagnosis    BIT,
+    study_results_changed_treatment_plan BIT,
+    general_comments                     TEXT,
+    encounter_date_created               DATETIME,
+    index_asc                            INT,
+    index_desc                           INT
 );

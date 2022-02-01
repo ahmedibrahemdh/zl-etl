@@ -22,7 +22,7 @@ configuration:
           - tableName: "covid_disposition"
           - tableName: "covid_lab_test"
           - tableName: "covid_visit"
-          - tableName: "echocardiogram"
+          - tableName: "echocardiogram_encounters"
           - tableName: "mch_birth"
           - tableName: "mch_delivery"
           - tableName: "mch_patient"
