@@ -17,8 +17,10 @@ eid_date_completed	datetime,
 mom_hiv_emr_id int,
 mom_age_at_delivery int,
 delivery_date date,
-Delivery_with_partograph boolean,
+delivery_with_partograph_obs int,
+delivery_with_partograph boolean,
 delivery_location_cat  varchar(255),
+maternity_clinic_type_obs int, 
 maternity_clinic_type  varchar(255),
 breastfeeding_status  varchar(255),
 hiv_rapid_test_obs int(11),
@@ -34,6 +36,7 @@ next_dispensing_date date,
 is_LTFU boolean,
 is_exposed boolean,
 is_lab_specimen_rejected boolean,
+health_facility_obs int,
 health_facility varchar(255)
 );
 
@@ -100,8 +103,28 @@ set next_dispensing_date = date(obs_value_datetime(latestEnc(patient_id, @hivDis
 update temp_eid t 
 set is_LTFU = if(date_add(next_dispensing_date, interval 28 day) > CURRENT_DATE(),'0','1' ); 
 
+-- delivery with partograph
+update temp_eid t
+set delivery_with_partograph_obs = latestObs(t.patient_id, concept_from_mapping('PIH','13964'), null);
+
+update temp_eid t
+set delivery_with_partograph = value_coded_as_boolean(delivery_with_partograph_obs);
+
+-- maternity clinic type
+update temp_eid t
+set maternity_clinic_type_obs = latestObs(t.patient_id, concept_from_mapping('CIEL', '164851'), null);
+update temp_eid t
+set maternity_clinic_type = (select concept_name(value_coded, 'en') from obs where voided = 0 and obs_id = t.maternity_clinic_type_obs);
+
+update temp_eid t
+set health_facility_obs = latestObs(t.patient_id, concept_from_mapping('CIEL', '163529'), null);
+update temp_eid t
+set health_facility = (select location_name(value_text) from obs where voided = 0 and obs_id = t.health_facility_obs);
+
+
 select  
 patient_id,
+zlemr(patient_id),
 infant_age_in_months,
 age_cat_infant,
 eid_date_enrolled,
@@ -109,7 +132,7 @@ eid_date_completed,
 mom_hiv_emr_id,
 mom_age_at_delivery,
 delivery_date,
-Delivery_with_partograph,
+delivery_with_partograph,
 delivery_location_cat,
 maternity_clinic_type,
 breastfeeding_status,
