@@ -1,6 +1,7 @@
 CREATE TABLE pmtct_infant_delivery
 (
 patient_id int,
+emr_id varchar(25),
 infant_age_in_months int,
 age_cat_infant varchar(50),
 eid_date_enrolled	datetime,
