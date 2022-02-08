@@ -13,6 +13,7 @@ CREATE TABLE echocardiogram_encounters
     visit_id                             INT,
     systolic_bp                          FLOAT,
     diastolic_bp                         FLOAT,
+    heart_failure                        BIT,
     heart_rate                           FLOAT,
     murmur                               VARCHAR(255),
     NYHA_class                           VARCHAR(255),
@@ -28,7 +29,7 @@ CREATE TABLE echocardiogram_encounters
     peripartum_cardiomyopathy_diagnosis  BIT,
     ischemic_cardiomyopathy_diagnosis    BIT,
     study_results_changed_treatment_plan BIT,
-    general_comments                     TEXT,
+    study_results_changed_treatment_plan_comment  TEXT,
     encounter_date_created               DATETIME,
     index_asc                            INT,
     index_desc                           INT
