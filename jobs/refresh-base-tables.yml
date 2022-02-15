@@ -31,6 +31,4 @@ configuration:
           - tableName: "mch_visit"
           - tableName: "mch_j9_data"
           - tableName: "summary_db_restore"
-          - tableName: "tb_lab_results"
-          - tableName: "tb_screening"
           - tableName: "vaccinations_anc"

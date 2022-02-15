@@ -38,6 +38,8 @@ configuration:
           - tableName: "pmtct_visits"
           - tableName: "pmtct_labs"
           - tableName: "pmtct_pregnancy"
+          - tableName: "tb_lab_results"
+          - tableName: "tb_screening"
 
     - type: "sqlserver-bulk-import"
       description: "Load hivmigration_data_warnings for ${siteName}"
