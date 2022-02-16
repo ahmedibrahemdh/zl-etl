@@ -5,6 +5,6 @@ schedule:
 configuration:
   iterations:
     - siteName: "humci"
-      partitionNum: "1"
+      partitionNum: "7"
   jobTemplate:
     path: "refresh-base-tables.yml"

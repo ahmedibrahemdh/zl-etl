@@ -4,6 +4,7 @@ type: "job-pipeline"
 description: "Refresh HIV Data for ${siteName}"
 parameters:
   siteName: "hiv"
+  partitionNum: "8"
 schedule:
   cron: "${executeCron.refreshHivData}"
 configuration:
