@@ -32,3 +32,5 @@ configuration:
           - tableName: "mch_j9_data"
           - tableName: "summary_db_restore"
           - tableName: "vaccinations_anc"
+          - tableName: "tb_lab_results"
+          - tableName: "tb_screening"

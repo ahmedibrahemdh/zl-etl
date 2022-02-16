@@ -24,6 +24,8 @@ configuration:
               table: "${tableName}"
               schema: "sql/schemas/${tableName}.sql"
         iterations:
+          - tableName: "all_lab_orders"
+          - tableName: "all_lab_results"
           - tableName: "hiv_dispensing"
           - tableName: "hiv_patient"
           - tableName: "hiv_patient_program"
