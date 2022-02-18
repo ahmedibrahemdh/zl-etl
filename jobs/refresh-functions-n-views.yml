@@ -1,0 +1,12 @@
+# The purpose of this job is to refresh views and functions
+type: "job-pipeline"
+description: "Refreshing views"
+configuration:
+  jobs:
+    - path: "create-source-views-and-functions.yml"
+    - type: "iterating-job"
+      description: "Creating for ${siteName} using partition ${partitionNum}"
+      configuration:
+        maxConcurrentJobs: 1
+        jobTemplate:
+          path: "import-to-table-partition.yml"

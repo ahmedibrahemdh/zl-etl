@@ -5,6 +5,15 @@ schedule:
 configuration:
   iterations:
     - siteName: "humci"
-      partitionNum: "7"
+      partitionNum: "1"
   jobTemplate:
-    path: "refresh-base-tables.yml"
+    path:
+     - "refresh-functions-n-views.yml"
+     - "refresh-covid-tables.yml"
+     - "refresh-hiv-tables.yml"
+     - "refresh-lab-tables.yml"
+     - "refresh-mch-tables.yml"
+     - "refresh-ncd-tables.yml"
+     - "refresh-pmtct-tables.yml"
+     - "refresh-tb-tables.yml"
+     - "refresh-summary-tables.yml"

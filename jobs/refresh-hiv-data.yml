@@ -9,7 +9,6 @@ schedule:
   cron: "${executeCron.refreshHivData}"
 configuration:
   jobs:
-    - path: "create-source-views-and-functions.yml"
     - type: "iterating-job"
       description: "Load HIV Data from all tables for ${siteName}"
       configuration:
@@ -24,25 +23,12 @@ configuration:
               datasource: "warehouse-hiv.yml"
               table: "${tableName}"
               schema: "sql/schemas/${tableName}.sql"
-        iterations:
-          - tableName: "all_lab_orders"
-          - tableName: "all_lab_results"
-          - tableName: "hiv_dispensing"
-          - tableName: "hiv_patient"
-          - tableName: "hiv_patient_program"
-          - tableName: "hiv_regimens"
-          - tableName: "hiv_status"
-          - tableName: "hiv_tests"
-          - tableName: "hiv_viral_load"
-          - tableName: "hiv_visit"
-          - tableName: "ovc_program_encounters"
-          - tableName: "pmtct_infant_delivery"
-          - tableName: "pmtct_contacts"
-          - tableName: "pmtct_visits"
-          - tableName: "pmtct_labs"
-          - tableName: "pmtct_pregnancy"
-          - tableName: "tb_lab_results"
-          - tableName: "tb_screening"
+            path:
+             - "refresh-functions-n-views.yml"
+             - "refresh-hiv-tables.yml"
+             - "refresh-lab-tables.yml"
+             - "refresh-pmtct-tables.yml"
+             - "refresh-tb-tables.yml"
 
     - type: "sqlserver-bulk-import"
       description: "Load hivmigration_data_warnings for ${siteName}"

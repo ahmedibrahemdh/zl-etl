@@ -18,4 +18,11 @@ configuration:
     - siteName: "mirebalais"
       partitionNum: "6"
   jobTemplate:
-    path: "refresh-base-tables.yml"
+    path:
+     - "refresh-functions-n-views.yml"
+     - "refresh-covid-tables.yml"
+     - "refresh-lab-tables.yml"
+     - "refresh-mch-tables.yml"
+     - "refresh-ncd-tables.yml"
+     - "refresh-tb-tables.yml"
+     - "refresh-summary-tables.yml"

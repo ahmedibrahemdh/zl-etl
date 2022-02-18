@@ -1,0 +1,17 @@
+# The purpose of this job is to refresh table containing hiv pmtct data
+type: "job-pipeline"
+description: "Refreshing pmtct tables for ${siteName} using partition ${partitionNum}"
+configuration:
+  jobs:
+    - type: "iterating-job"
+      description: "Importing from ${siteName} using partition ${partitionNum}"
+      configuration:
+        maxConcurrentJobs: 1
+        jobTemplate:
+          path: "import-to-table-partition.yml"
+        iterations:
+          - tableName: "pmtct_infant_delivery"
+          - tableName: "pmtct_contacts"
+          - tableName: "pmtct_visits"
+          - tableName: "pmtct_labs"
+          - tableName: "pmtct_pregnancy"

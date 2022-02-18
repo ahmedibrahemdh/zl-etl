@@ -1,0 +1,21 @@
+# The purpose of this job is to refresh table containing mch data
+type: "job-pipeline"
+description: "Refreshing mch tables for ${siteName} using partition ${partitionNum}"
+configuration:
+  jobs:
+    - type: "iterating-job"
+      description: "Importing from ${siteName} using partition ${partitionNum}"
+      configuration:
+        maxConcurrentJobs: 1
+        jobTemplate:
+          path: "import-to-table-partition.yml"
+        iterations:
+          - tableName: "mch_birth"
+          - tableName: "mch_delivery"
+          - tableName: "mch_patient"
+          - tableName: "mch_pregnancy"
+          - tableName: "mch_status"
+          - tableName: "mch_visit"
+          - tableName: "mch_j9_data"
+          - tableName: "ovc_program_encounters"
+          - tableName: "vaccinations_anc"
