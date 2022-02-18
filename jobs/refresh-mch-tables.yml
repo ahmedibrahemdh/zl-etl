@@ -17,5 +17,4 @@ configuration:
           - tableName: "mch_status"
           - tableName: "mch_visit"
           - tableName: "mch_j9_data"
-          - tableName: "ovc_program_encounters"
           - tableName: "vaccinations_anc"

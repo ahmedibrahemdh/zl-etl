@@ -1,0 +1,13 @@
+# The purpose of this job is to refresh table containing ovc data
+type: "job-pipeline"
+description: "Refreshing ovc tables for ${siteName} using partition ${partitionNum}"
+configuration:
+  jobs:
+    - type: "iterating-job"
+      description: "Importing from ${siteName} using partition ${partitionNum}"
+      configuration:
+        maxConcurrentJobs: 1
+        jobTemplate:
+          path: "import-to-table-partition.yml"
+        iterations:
+          - tableName: "ovc_program_encounters"

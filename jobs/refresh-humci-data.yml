@@ -14,6 +14,6 @@ configuration:
      - "refresh-lab-tables.yml"
      - "refresh-mch-tables.yml"
      - "refresh-ncd-tables.yml"
+     - "refresh-ovc-tables.yml"
      - "refresh-pmtct-tables.yml"
      - "refresh-tb-tables.yml"
-     - "refresh-summary-tables.yml"

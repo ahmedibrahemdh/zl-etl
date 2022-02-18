@@ -17,6 +17,8 @@ configuration:
       partitionNum: "5"
     - siteName: "mirebalais"
       partitionNum: "6"
+    - siteName: "hiv"
+      partitionNum: "7"
   jobTemplate:
     path:
      - "refresh-functions-n-views.yml"
