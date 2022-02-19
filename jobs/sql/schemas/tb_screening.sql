@@ -4,8 +4,6 @@ create table tb_screening
     zlemr_id            varchar(50),
     dossier_id          varchar(50),
     encounter_id        int,
-    date_entered        DATETIME,
-    user_entered        VARCHAR(50),
     cough_result        varchar(3),
     fever_result        varchar(3),
     weight_loss_result  varchar(3),
@@ -17,5 +15,7 @@ create table tb_screening
     tb_screening_result varchar(3),
     tb_screening_date   datetime,
     index_ascending     int,
-    index_descending    int
+    index_descending    int,
+    date_entered        DATETIME,
+    user_entered        VARCHAR(50)
 );

@@ -35,7 +35,7 @@ CREATE TABLE covid_visit
     bp_diastolic             FLOAT,
     SpO2                     FLOAT,
     room_air                 VARCHAR(11),
-    cap_refill               VARCHAR(50),
+    cap_refill               VARCHAR(100),
     cap_refill_time          FLOAT,
     pain                     VARCHAR(50),
     general_exam             VARCHAR(11),
