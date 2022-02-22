@@ -131,14 +131,15 @@ set highest_birth_number = highest_birth_order
 ;
 
 -- retrieves the obs group of the highest birth number previously calculated
-update temp_j9 t 
-inner join obs o on o.obs_id =
+update temp_j9 t
+inner join obs o on o.person_id = t.patient_id and o.obs_id =
 	(select obs_id from obs o2
 	where o2.voided = 0
 	and o2.concept_id = concept_from_mapping('PIH','13126')
 	and o2.value_numeric = highest_birth_number
+	and o2.person_id = patient_id
 	order by o2.obs_datetime desc limit 1)
-set highest_birth_number_obs_group = o.obs_group_id ;	
+set highest_birth_number_obs_group = o.obs_group_id ;
 
 -- prior birth delivery type (using 2 fields above)
 update temp_j9 t
