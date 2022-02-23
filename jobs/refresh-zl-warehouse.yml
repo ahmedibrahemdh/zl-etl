@@ -1,7 +1,7 @@
 type: "iterating-job"
 description: "Refreshing OpenMRS Data for all sites"
 schedule:
-  cron: "${executeCron.refreshOpenmrsData}"
+  cron: "${executeCron.refreshZlWarehouse}"
 configuration:
   maxConcurrentJobs: 5  # Import into up to 5 sites concurrently
   iterations:

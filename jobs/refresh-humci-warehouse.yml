@@ -4,7 +4,7 @@
 type: "iterating-job"
 description: "Refreshing OpenMRS Data for HUM-CI"
 schedule:
-  cron: "${executeCron.refreshOpenmrsData}"
+  cron: "${executeCron.refreshHumciWarehouse}"
 configuration:
   maxConcurrentJobs: 1  # Import one at a time
   iterations:
