@@ -19,6 +19,7 @@ CREATE TEMPORARY TABLE temp_tb_smear_results
 (
     patient_id                  INT(11),
     encounter_id                INT(11),
+    test_location			VARCHAR(255),
     order_id                    INT(11),
     order_number                VARCHAR(50),
     specimen_collection_date    DATE,
@@ -61,6 +62,7 @@ CREATE TEMPORARY TABLE temp_tb_culture_results
 (
     patient_id                  INT(11),
     encounter_id                INT(11),
+    test_location			VARCHAR(255),
     order_id                    INT(11),
     order_number                VARCHAR(50),
     specimen_collection_date    DATE,
@@ -103,6 +105,7 @@ CREATE TEMPORARY TABLE temp_tb_genxpert_results
 (
     patient_id                  INT(11),
     encounter_id                INT(11),
+    test_location			VARCHAR(255),
     order_id                    INT(11),
     order_number                VARCHAR(50),
     specimen_collection_date    DATE,
@@ -149,6 +152,7 @@ CREATE TEMPORARY TABLE temp_tb_skin_results
 (
     patient_id                  INT(11),
     encounter_id                INT(11),
+    test_location			VARCHAR(255),    
     order_id                    INT(11),
     order_number                VARCHAR(50),
     specimen_collection_date    DATE,
@@ -196,6 +200,7 @@ CREATE TEMPORARY TABLE temp_reason_no_smear
 (
     patient_id                  INT(11),
     encounter_id                INT(11),
+    test_location			VARCHAR(255),
     order_id                    INT(11),
     order_number                VARCHAR(50),
     specimen_collection_date    DATE,
@@ -225,6 +230,7 @@ CREATE TEMPORARY TABLE temp_reason_no_culture
 (
     patient_id                  INT(11),
     encounter_id                INT(11),
+    test_location			VARCHAR(255),
     order_id                    INT(11),
     order_number                VARCHAR(50),
     specimen_collection_date    DATE,
@@ -254,6 +260,7 @@ CREATE TEMPORARY TABLE temp_reason_no_genxpert
 (
     patient_id                  INT(11),
     encounter_id                INT(11),
+    test_location			VARCHAR(255),    
     order_id                    INT(11),
     order_number                VARCHAR(50),
     specimen_collection_date    DATE,
@@ -366,12 +373,16 @@ UPDATE temp_tb_final_query tbf INNER JOIN temp_tb_index_asc tbia ON tbf.encounte
 UPDATE temp_tb_final_query tbf INNER JOIN temp_tb_index_desc tbid ON tbf.encounter_id = tbid.encounter_id AND tbf.test_type = tbid.test_type AND tbf.date_created = tbid.date_created
     SET tbf.index_desc = tbid.index_desc;
 
+UPDATE temp_tb_final_query tbf
+	SET test_location = encounter_parent_location_name(encounter_id);
+   
 ## Final query
 SELECT
     patient_id,
     zlemr(patient_id),
     dosId(patient_id),
     encounter_id,
+    test_location, 
     specimen_collection_date,
     sample_taken_date_estimated,
     test_result_date,
