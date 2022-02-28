@@ -4,6 +4,7 @@ CREATE TABLE tb_lab_results
     zlemr_id                    VARCHAR(50),
     dossier_id                  VARCHAR(50),
     encounter_id                INT,
+    test_location               VARCHAR(255),
     specimen_collection_date    DATE,
     sample_taken_date_estimated VARCHAR(11),
     test_result_date            DATE,

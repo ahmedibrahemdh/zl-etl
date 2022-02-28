@@ -12,6 +12,7 @@ CREATE TEMPORARY TABLE temp_TB_screening
 (
 patient_id INT(11),
 encounter_id INT(11),
+screening_location VARCHAR(255),
 cough_result_concept INT(11),
 fever_result_concept INT(11),
 weight_loss_result_concept INT(11),
@@ -42,6 +43,9 @@ AND EXISTS
   (SELECT 1 FROM obs o WHERE o.encounter_id = e.encounter_id 
    AND o.voided = 0 AND o.concept_id IN (@absent,@present))
 ;  
+
+UPDATE temp_TB_screening
+set screening_location  = encounter_parent_location_name(encounter_id);
 
 -- update answer of each of the screening questions by bringing in the symptom/answer (fever, weight loss etc...)
 -- and update the temp table column based on whether the obs question was symptom question was present or absent
@@ -150,6 +154,7 @@ patient_id,
 ZLEMR(patient_id) emr_id,
 DOSID(patient_id) dossier_id,
 encounter_id,
+screening_location, 
 IF(cough_result_concept = @present,'yes',IF(cough_result_concept = @absent,'no',NULL)) "cough_result",
 IF(fever_result_concept = @present,'yes',IF(fever_result_concept = @absent,'no',NULL)) "fever_result",
 IF(weight_loss_result_concept = @present,'yes',IF(weight_loss_result_concept = @absent,'no',NULL)) "weight_loss",
