@@ -1,4 +1,4 @@
-CREATE TABLE pmtct_pregnancy(
+CREATE TABLE pmtct_pregnancy (
 	patient_id              INT,
     zlemr                   VARCHAR(25),
     start_date              DATE,

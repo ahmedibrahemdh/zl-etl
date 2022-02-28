@@ -11,8 +11,6 @@ CREATE TABLE pmtct_visits
     hiv_test_date        DATE,
     tb_screening_date    DATE,
     has_provided_contact BIT,
-    -- hiv_test_result varchar(255),
-    -- maternity_clinic_type varchar(100),
     index_asc            INT,
     index_desc           INT
 );
