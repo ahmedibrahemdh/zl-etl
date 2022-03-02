@@ -31,6 +31,8 @@ end_date datetime,
 end_reasons varchar(255),
 ptme_or_prophylaxis char(1),
 regimen_line_original varchar(255),
+art_start_date datetime,
+inh_start_date datetime,
 index_ascending_patient int,
 index_descending_patient int,
 index_ascending_category int,
@@ -117,6 +119,14 @@ update temp_HIV_regimens t
 set ptme_or_prophylaxis =
   CASE WHEN drug_category in ('PMTCT','Prophylaxis') THEN '1' else '0' END;
   
+-- art start date
+update temp_HIV_regimens 
+set art_start_date = date(OrderReasonStartDate(patient_id, 'CIEL','138405'));
+  
+-- inh start date
+update temp_HIV_regimens 
+set inh_start_date = date(DrugConceptStartDate(patient_id, 'CIEL','78280')); 
+
 -- indexes by patient/category
 -- The ascending/descending indexes are calculated ordering on start date
 -- new temp tables are used to build them and then joined into the main temp table. 
@@ -135,7 +145,7 @@ FROM (SELECT
             drug_category,
             start_date,
             order_id,
-            patient_id,
+            patient_id,  
             @u:= patient_id,
             @v:= drug_category
       FROM temp_HIV_regimens,
@@ -274,6 +284,8 @@ end_date,
 end_reasons,
 ptme_or_prophylaxis,
 regimen_line_original,
+art_start_date,
+inh_start_date,
 index_ascending_category,
 index_descending_category,
 index_ascending_patient,
