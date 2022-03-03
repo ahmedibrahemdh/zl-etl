@@ -563,12 +563,7 @@ DROP TABLE IF EXISTS temp_hiv_dispensing;
 CREATE TEMPORARY TABLE temp_hiv_dispensing
 (
 person_id INT,
-encounter_id INT,
-art_start_date DATE,
-months_on_art DOUBLE,
-initial_art_regimen TEXT,
 latest_encounter INT,
-art_regimen TEXT,
 last_pickup_date DATE,
 last_pickup_months_dispensed DOUBLE,
 last_pickup_treatment_line VARCHAR(5),
@@ -578,29 +573,17 @@ agent TEXT
 );
 
 CREATE INDEX temp_hiv_dispensing_person_id ON temp_hiv_dispensing (person_id);
-CREATE INDEX temp_hiv_dispensing_encounter_id ON temp_hiv_dispensing (encounter_id);
 CREATE INDEX temp_hiv_dispensing_latest_encounter ON temp_hiv_dispensing (latest_encounter);
 
-INSERT INTO temp_hiv_dispensing (person_id, art_start_date)
-SELECT person_id, MIN(obs_datetime) FROM 
+INSERT INTO temp_hiv_dispensing (person_id)
+SELECT person_id FROM 
 obs WHERE voided = 0 AND
 concept_id = CONCEPT_FROM_MAPPING('PIH', '1535') AND encounter_id IN (SELECT encounter_id FROM encounter
 WHERE voided = 0 AND encounter_type = @hiv_dispensing_encounter)
 AND value_coded IN (CONCEPT_FROM_MAPPING('PIH', '3013') , CONCEPT_FROM_MAPPING('PIH', '2848')) GROUP BY person_id;
 
-UPDATE temp_hiv_dispensing t SET months_on_art = TIMESTAMPDIFF(MONTH, t.art_start_date, NOW());
-
-UPDATE temp_hiv_dispensing t SET encounter_id = (SELECT encounter_id FROM encounter WHERE encounter_type = @hiv_dispensing_encounter
-AND DATE(encounter_datetime) = t.art_start_date AND voided = 0 AND t.person_id = patient_id GROUP BY patient_id);
-
 UPDATE temp_hiv_dispensing t SET latest_encounter = (SELECT MAX(encounter_id) FROM encounter WHERE encounter_type = @hiv_dispensing_encounter
 AND voided = 0 AND t.person_id = patient_id GROUP BY patient_id);
-
-UPDATE temp_hiv_dispensing t SET initial_art_regimen = (SELECT GROUP_CONCAT(CONCEPT_NAME(value_coded, 'en')) FROM obs o WHERE o.encounter_id = t.encounter_id 
-AND concept_id = CONCEPT_FROM_MAPPING('PIH', 'MEDICATION ORDERS'));
-
-UPDATE temp_hiv_dispensing t SET art_regimen = (SELECT GROUP_CONCAT(CONCEPT_NAME(value_coded, 'en')) FROM obs o WHERE o.encounter_id = t.latest_encounter 
-AND concept_id = CONCEPT_FROM_MAPPING('PIH', 'MEDICATION ORDERS'));
 
 UPDATE temp_hiv_dispensing t SET last_pickup_date = (SELECT DATE(encounter_datetime) FROM encounter e WHERE voided = 0 AND e.encounter_id = t.latest_encounter);
 
@@ -613,6 +596,33 @@ AND concept_id = CONCEPT_FROM_MAPPING('CIEL', '5096'));
 UPDATE temp_hiv_dispensing t SET days_late_to_pickup = TIMESTAMPDIFF(DAY, next_pickup_date, NOW());
 
 UPDATE temp_hiv_dispensing t SET agent = OBS_VALUE_TEXT(t.latest_encounter, 'CIEL', '164141');
+
+DROP TABLE IF EXISTS temp_hiv_art;
+CREATE TEMPORARY TABLE temp_hiv_art
+(
+patient_id INT,
+order_id INT,
+art_start_date DATE,
+months_on_art DOUBLE,
+initial_art_regimen TEXT,
+art_regimen TEXT
+);
+
+CREATE INDEX temp_hiv_art_patient ON temp_hiv_art (patient_id);
+
+-- the following will add the first row (sorted by date_activated, date_created, order_id) for each patient
+INSERT INTO temp_hiv_art (patient_id,order_id,art_start_date,initial_art_regimen)
+	SELECT o2.patient_id, o2.order_id, o2.date_activated , concept_name(o2.concept_id ,'en') FROM
+		(SELECT o.* FROM orders o
+		WHERE o.order_reason = concept_from_mapping( 'CIEL','138405')
+		ORDER BY date_activated, date_created, order_id ) o2
+	GROUP BY o2.patient_id
+	ORDER BY patient_id 
+;
+
+UPDATE temp_hiv_art t SET months_on_art = TIMESTAMPDIFF(MONTH, t.art_start_date, NOW());
+
+UPDATE temp_hiv_art t set art_regimen = ActiveDrugConceptNameList(t.patient_id, 'CIEL','138405','en');
 
 ### Final Query
 SELECT 
@@ -684,10 +694,10 @@ tsl.last_viral_load_numeric,
 tsl.last_viral_load_undetectable,
 tsl.months_since_last_vl,
 thd.hiv_diagnosis_date,
-tehd.art_start_date,
-tehd.months_on_art,
-tehd.initial_art_regimen,
-tehd.art_regimen,
+tha.art_start_date,
+tha.months_on_art,
+tha.initial_art_regimen,
+tha.art_regimen,
 tehd.last_pickup_date,
 tehd.last_pickup_months_dispensed,
 tehd.last_pickup_treatment_line,
@@ -702,4 +712,5 @@ LEFT JOIN temp_hiv_last_visits tsv ON t.patient_id = tsv.patient_id
 LEFT JOIN temp_hiv_last_viral tsl ON t.patient_id = tsl.person_id
 LEFT JOIN temp_hiv_next_visit_date tsd ON t.patient_id = tsd.person_id
 LEFT JOIN temp_hiv_diagnosis_date thd ON t.patient_id = thd.person_id
-LEFT JOIN temp_hiv_dispensing tehd ON tehd.person_id = t.patient_id;
+LEFT JOIN temp_hiv_dispensing tehd ON tehd.person_id = t.patient_id
+LEFT JOIN temp_hiv_art tha ON tha.patient_id = t.patient_id;
