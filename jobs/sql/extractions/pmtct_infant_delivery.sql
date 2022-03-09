@@ -121,6 +121,7 @@ set health_facility_obs = latestObs(t.patient_id, concept_from_mapping('CIEL', '
 update temp_eid t
 set health_facility = (select location_name(value_text) from obs where voided = 0 and obs_id = t.health_facility_obs);
 
+update temp_eid t set t.breastfeeding_status = value_coded_name(latest_obs(t.patient_id, 'CIEL', '1151'), 'en');
 
 select  
 patient_id,
