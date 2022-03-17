@@ -19,6 +19,13 @@
         <url>http://pih.org</url>
     </organization>
 
+    <licenses>
+        <license>
+            <name>Mozilla Public License 2.0 with Healthcare Disclaimer</name>
+            <url>http://openmrs.org/license</url>
+        </license>
+    </licenses>
+
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
