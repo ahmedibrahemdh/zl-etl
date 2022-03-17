@@ -26,6 +26,12 @@
         </license>
     </licenses>
 
+    <scm>
+        <connection>scm:git:git://github.com/PIH/openmrs-zl-etl.git</connection>
+        <developerConnection>scm:git:ssh://github.com:PIH/zl-etl.git</developerConnection>
+        <url>https://github.com/PIH/zl-etl</url>
+    </scm>
+
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
