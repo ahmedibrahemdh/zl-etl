@@ -4,7 +4,7 @@ configuration:
   jobs:
     - path: "create-source-views-and-functions.yml"
     - type: "iterating-job"
-      description: "Load HIV Data from all tables for ${siteName}"
+      description: "Importing from ${siteName} to ${tableName} using partition ${partitionNum}"
       configuration:
         jobTemplate:
           path: "import-to-table-partition.yml"
