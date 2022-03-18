@@ -30,7 +30,7 @@ configuration:
           - tableName: "tb_screening"
 
     - type: "sqlserver-bulk-import"
-      description: "Load hivmigration_data_warnings for ${siteName}"
+      description: "Importing from ${siteName} to hivmigration_data_warnings using partition ${partitionNum}"
       configuration:
         extract:
           datasource: "openmrs-${siteName}.yml"
@@ -43,7 +43,7 @@ configuration:
           dropAndRecreateTable: "true"
 
     - type: "sqlserver-bulk-import"
-      description: "Load hivmigration_aggregrate_data_warnings for ${siteName}"
+      description: "Importing from ${siteName} to hivmigration_aggregrate_data_warnings using partition ${partitionNum}"
       configuration:
         extract:
           datasource: "openmrs-${siteName}.yml"
