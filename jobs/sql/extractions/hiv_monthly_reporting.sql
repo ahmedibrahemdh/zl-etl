@@ -14,19 +14,23 @@ FROM patient_program WHERE voided=0 AND program_id = @hiv_program_id;
 DROP TEMPORARY TABLE IF EXISTS temp_eom_appts;
 CREATE TEMPORARY TABLE temp_eom_appts
 (
-patient_id				INT(11),
-patient_program_id			INT(11),
-date_enrolled				DATETIME,
-date_completed				DATETIME,
-reporting_date				DATE,
-latest_hiv_note_encounter_id		INT(11),
+patient_id						INT(11),
+patient_program_id				INT(11),
+date_enrolled					DATETIME,
+date_completed					DATETIME,
+reporting_date					DATE,
+latest_hiv_note_encounter_id	INT(11),
 latest_hiv_visit_date			DATETIME,
-latest_expected_hiv_visit_date		DATETIME,
-hiv_visit_days_late			INT,
-latest_dispensing_encounter_id		INT(11),
+latest_expected_hiv_visit_date	DATETIME,
+hiv_visit_days_late				INT,
+latest_dispensing_encounter_id	INT(11),
 latest_dispensing_date			DATETIME,
-latest_expected_dispensing_date		DATETIME,
-Dispensing_days_late			INT
+latest_expected_dispensing_date	DATETIME,
+dispensing_days_late			INT,
+latest_hiv_viral_load_obs_group	INT(11),
+latest_hiv_viral_load_date		DATETIME,
+latest_hiv_viral_load_coded		VARCHAR(255),
+latest_hiv_viral_load			INT
 );
 
 create index eom_patient on temp_eom_appts(patient_id);
@@ -71,6 +75,27 @@ set latest_expected_dispensing_date = obs_value_datetime(t.latest_dispensing_enc
 update temp_eom_appts t
 set dispensing_days_late = DATEDIFF(t.reporting_date ,ifnull(latest_expected_dispensing_date,ifnull(latest_dispensing_date,date_enrolled)  )); 
 
+-- last viral load info
+update temp_eom_appts t
+inner join obs o on obs_id = 
+	(select obs_id from obs o2
+	where o2.voided = 0 
+	and o2.person_id = t.patient_id 
+	and o2.concept_id = CONCEPT_FROM_MAPPING("PIH", "HIV viral load construct")
+	and o2.obs_datetime >= t.date_enrolled 
+	and o2.obs_datetime <= t.reporting_date 
+	order by obs_datetime desc, obs_id desc limit 1)
+set latest_hiv_viral_load_obs_group = o.obs_id ;
+
+update temp_eom_appts t
+set latest_hiv_viral_load_date = obs_date(latest_hiv_viral_load_obs_group);
+
+update temp_eom_appts t
+set latest_hiv_viral_load_coded	= obs_from_group_id_value_coded_list(latest_hiv_viral_load_obs_group,'CIEL','1305',@locale);
+
+update temp_eom_appts t
+set latest_hiv_viral_load	= obs_from_group_id_value_numeric(latest_hiv_viral_load_obs_group,'CIEL','856');
+
 SELECT
 	patient_id,
 	zlemr(patient_id),
@@ -84,5 +109,8 @@ SELECT
 	latest_dispensing_encounter_id,
 	latest_dispensing_date,
 	latest_expected_dispensing_date,
-	dispensing_days_late
+	dispensing_days_late,
+	latest_hiv_viral_load_date,
+	latest_hiv_viral_load_coded,
+	latest_hiv_viral_load
 from temp_eom_appts;
