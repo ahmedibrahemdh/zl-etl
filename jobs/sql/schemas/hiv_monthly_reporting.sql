@@ -12,5 +12,8 @@ hiv_visit_days_late             int,
 latest_dispensing_encounter_id  int,
 latest_dispensing_date          datetime,
 latest_expected_dispensing_date datetime,
-dispensing_days_late            int
+dispensing_days_late            int,
+latest_hiv_viral_load_date      datetime,
+latest_hiv_viral_load_coded     varchar(255),
+latest_hiv_viral_load           int
 ); 
