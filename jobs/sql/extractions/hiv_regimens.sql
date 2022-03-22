@@ -32,7 +32,9 @@ end_reasons varchar(255),
 ptme_or_prophylaxis char(1),
 regimen_line_original varchar(255),
 art_start_date datetime,
+inh_primary_order_id int(11),
 inh_start_date datetime,
+inh_completion_date datetime,
 index_ascending_patient int,
 index_descending_patient int,
 index_ascending_category int,
@@ -123,9 +125,33 @@ set ptme_or_prophylaxis =
 update temp_HIV_regimens 
 set art_start_date = date(OrderReasonStartDate(patient_id, 'CIEL','138405'));
   
--- inh start date
-update temp_HIV_regimens 
-set inh_start_date = date(DrugConceptStartDate(patient_id, 'CIEL','78280')); 
+-- INH start, end dates
+-- The following 3 statements update the temp table with INH start dates and completion dates.
+-- the primary course, or if there is no data about which course it is, the first course is used 
+drop temporary table if exists temp_inh_orders;
+create temporary table temp_inh_orders 
+select DISTINCT t.patient_id, o.obs_id, o.value_coded, os.order_id ,os.date_activated , os.date_stopped from patient t
+inner join orders os on os.voided =0 and os.concept_id = concept_from_mapping('CIEL','78280') and os.patient_id = t.patient_id 
+inner join encounter e on e.encounter_id = os.encounter_id and e.voided = 0
+left outer join obs o on o.encounter_id  = e.encounter_id and o.voided = 0 and o.concept_id = concept_from_mapping('PIH','13786')
+;
+
+-- choose the earliest INH order, not including those tagged as the secondary course
+drop temporary table if exists temp_inh_orders2;
+create temporary table temp_inh_orders2 
+select * from (
+	select * from temp_inh_orders t2
+	where t2.value_coded is null or t2.value_coded  <> concept_from_mapping('PIH','7535')
+	order by t2.date_activated , t2.date_stopped 
+) t
+group by patient_id  
+;
+
+update temp_HIV_regimens t 
+inner join temp_inh_orders2 tio on tio.patient_id = t.patient_id
+set t.inh_start_date = tio.date_activated,
+	t.inh_completion_date = tio.date_stopped 
+;	
 
 -- indexes by patient/category
 -- The ascending/descending indexes are calculated ordering on start date
@@ -286,6 +312,7 @@ ptme_or_prophylaxis,
 regimen_line_original,
 art_start_date,
 inh_start_date,
+inh_completion_date, 
 index_ascending_category,
 index_descending_category,
 index_ascending_patient,
