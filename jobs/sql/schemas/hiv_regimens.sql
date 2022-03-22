@@ -21,6 +21,7 @@ create table hiv_regimens
     regimen_line_original     varchar(255),
     art_start_date            datetime,
     inh_start_date            datetime,
+    inh_completion_date       datetime,
     index_ascending_category  int,
     index_descending_category int,
     index_ascending_patient   int,
