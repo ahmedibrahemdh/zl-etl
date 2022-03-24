@@ -2,7 +2,7 @@ create table ncd_patient_table
 (
 patient_id int,
 birthdate date,
-sex char(1),
+sex  char(1),
 department varchar(50),
 commune varchar(50),
 ncd_enrollment_date date,
